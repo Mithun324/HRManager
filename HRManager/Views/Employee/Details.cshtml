@@ -1,0 +1,26 @@
+﻿@model HRManager.Models.Employee
+@{ ViewBag.Title = "Employee Details"; }
+
+<div class="card">
+    <h2>@Model.FullName's Profile</h2>
+    
+    <div class="form-section">
+        <h3>Personal Details</h3>
+        <p><strong>Code:</strong> @Model.EmployeeCode</p>
+        <p><strong>Email:</strong> @Model.EmailAddress</p>
+        <p><strong>Mobile:</strong> @Model.MobileNumber</p>
+    </div>
+
+    <div class="form-section">
+        <h3>Employment Details</h3>
+        <p><strong>Department:</strong> @Model.EmploymentDetails?.Department</p>
+        <p><strong>Status:</strong> <span style="color:var(--accent); font-weight:bold;">@Model.EmploymentDetails?.ActivityStatus</span></p>
+    </div>
+    
+    <!-- Parent, Address, and Social sections map here -->
+
+    <div style="margin-top: 20px;">
+        <a href="@Url.Action("Edit", new { id = Model.EmployeeId })" class="btn btn-primary">Edit Profile</a>
+        <a href="@Url.Action("Index")" class="btn btn-secondary">Back to List</a>
+    </div>
+</div>

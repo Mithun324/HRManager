@@ -1,0 +1,31 @@
+﻿@model IEnumerable<HRManager.Models.Employee>
+
+<h2>Employee List</h2>
+
+<p>
+    @Html.ActionLink("Create New Employee", "Create")
+</p>
+
+<table class="table table-bordered">
+    <tr>
+        <th>Employee Code</th>
+        <th>Full Name</th>
+        <th>Email</th>
+        <th>Mobile</th>
+        <th>Actions</th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.EmployeeCode</td>
+            <td>@item.FullName</td>
+            <td>@item.EmailAddress</td>
+            <td>@item.MobileNumber</td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.EmployeeId }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.EmployeeId })
+            </td>
+        </tr>
+    }
+</table>

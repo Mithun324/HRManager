@@ -1,0 +1,32 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@(ViewData["Title"] ?? ViewBag.Title) - HRManager</title>
+    
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+
+    <header>
+        <div class="nav-container">
+            <a class="brand-logo" href="@Url.Action("Index", "Employee")">
+                💼 HRManager <span style="color: var(--primary); font-weight: 400;">Dashboard</span>
+            </a>
+            
+            <nav style="display: flex; gap: 1.5rem; font-size: 0.875rem; font-weight: 600;">
+                <a href="@Url.Action("Index", "Employee")" style="color: var(--text-main);">Directory</a>
+                <a href="@Url.Action("Create", "Employee")" style="color: var(--text-muted); transition: var(--transition);" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">Add Employee</a>
+            </nav>
+        </div>
+    </header>
+
+    <main role="main" class="container">
+        @RenderBody()
+    </main>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
+

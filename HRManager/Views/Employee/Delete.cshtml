@@ -1,0 +1,16 @@
+﻿@model HRManager.Models.Employee
+@{ ViewBag.Title = "Delete Confirmation"; }
+
+<div class="card" style="border-left: 5px solid var(--danger);">
+    <h2>Confirm Deletion</h2>
+    <p>Are you sure you want to permanently delete <strong>@Model.FullName</strong> (@Model.EmployeeCode)?</p>
+    <p><em>Warning: This will also delete all associated Parent, Address, Social Media, and Employment records.</em></p>
+    
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+        <div style="margin-top: 20px;">
+            <button type="submit" class="btn btn-danger">Yes, Delete Employee</button>
+            <a href="@Url.Action("Index")" class="btn btn-secondary">Cancel</a>
+        </div>
+    }
+</div>
