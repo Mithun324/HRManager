@@ -1,11 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore; // <-- Crucial using directive
+﻿using Microsoft.EntityFrameworkCore;
 using HRManager.Models;
 
 namespace HRManager.Data
 {
     public class HRManagerDbContext : DbContext
     {
-        // Modern .NET 9 constructor
         public HRManagerDbContext(DbContextOptions<HRManagerDbContext> options) : base(options) { }
 
         public DbSet<Employee> Employees { get; set; }
@@ -13,12 +12,18 @@ namespace HRManager.Data
         public DbSet<SocialMediaInformation> SocialMediaInformations { get; set; }
         public DbSet<EmploymentDetails> EmploymentDetails { get; set; }
         public DbSet<AddressInformation> AddressInformations { get; set; }
+        public DbSet<TaxInformation> TaxInformations { get; set; }
+        public DbSet<DrivingLicense> DrivingLicenses { get; set; }
+
+
+        // FIX: Add this line so the DbContext recognizes your Education table!
+        public DbSet<EducationInformation> EducationInformations { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // Configure 1-to-1 relationships and disable cascade delete
+            // Existing relationship mappings...
             modelBuilder.Entity<Employee>()
                 .HasOne(e => e.ParentInformation)
                 .WithOne(p => p.Employee)
@@ -38,9 +43,9 @@ namespace HRManager.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Employee>()
-                .HasOne(e => e.AddressInformation)
+                .HasMany(e => e.Addresses)
                 .WithOne(a => a.Employee)
-                .HasForeignKey<AddressInformation>(a => a.EmployeeId)
+                .HasForeignKey(a => a.EmployeeId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

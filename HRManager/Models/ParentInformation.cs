@@ -8,16 +8,18 @@ namespace HRManager.Models
         [Key, ForeignKey("Employee")]
         public int EmployeeId { get; set; }
 
-        public string FathersName { get; set; }
-        public string FathersNID { get; set; }
-        public string FathersPassportNo { get; set; }
-        public string FathersMobile { get; set; }
+        public string? FatherName { get; set; }
+        public string? MotherName { get; set; }
 
-        public string MothersName { get; set; }
-        public string MothersNID { get; set; }
-        public string MothersPassportNo { get; set; }
-        public string MothersMobile { get; set; }
+        public string? FatherNID { get; set; }
+        public string? FatherPassportNo { get; set; }
+        public string? FatherMobile { get; set; }
+        public string? MotherNID { get; set; }
+        public string? MotherPassportNo { get; set; }
+        public string? MotherMobile { get; set; }
 
-        public virtual Employee Employee { get; set; }
+        public virtual Employee? Employee { get; set; }
+
+ 
     }
 }

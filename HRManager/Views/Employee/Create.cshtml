@@ -1,66 +1,326 @@
-﻿@model HRManager.Models.Employee
-@{ ViewBag.Title = "Add Employee"; }
+﻿@model HRManager.ViewModels.EmployeeFormViewModel
+@{ 
+    ViewBag.Title = "Create Comprehensive Employee Profile"; 
+}
 
-<div class="card">
-    <h2>Add New Employee</h2>
-    @using (Html.BeginForm()) 
+<link rel="stylesheet" href="~/css/employee-forms.css" />
+
+<div class="emp-container">
+    <h2 class="emp-header-title">➕ Register New Employee Profile</h2>
+    
+    @using (Html.BeginForm("Create", "Employee", FormMethod.Post, new { enctype = "multipart/form-data" })) 
     {
         @Html.AntiForgeryToken()
         
         <div class="form-section">
-            <h3>1. Personal Information</h3>
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>Employee Code*</label>
-                    @Html.TextBoxFor(m => m.EmployeeCode, new { @class = "form-control", required="required" })
-                </div>
-                <div class="form-group">
-                    <label>Full Name*</label>
-                    @Html.TextBoxFor(m => m.FullName, new { @class = "form-control", required="required" })
-                </div>
-                <div class="form-group">
-                    <label>Email Address</label>
-                    @Html.TextBoxFor(m => m.EmailAddress, new { @class = "form-control", type="email" })
-                </div>
-                <div class="form-group">
-                    <label>Mobile Number</label>
-                    @Html.TextBoxFor(m => m.MobileNumber, new { @class = "form-control" })
-                </div>
+            <h3 class="section-title">1. Core Personal Information</h3>
+            <div class="grid-4-col">
+                <div class="form-group"><label class="form-label">Employee Code *</label> @Html.TextBoxFor(m => m.Employee.EmployeeCode, new { @class = "form-control", required="required" })</div>
+                <div class="form-group"><label class="form-label">Full Name *</label> @Html.TextBoxFor(m => m.Employee.FullName, new { @class = "form-control", required="required" })</div>
+                <div class="form-group"><label class="form-label">National ID</label> @Html.TextBoxFor(m => m.Employee.NationalID, new { @class = "form-control" })</div>
+                <div class="form-group"><label class="form-label">Passport No</label> @Html.TextBoxFor(m => m.Employee.PassportNo, new { @class = "form-control" })</div>
+                <div class="form-group"><label class="form-label">Birth ID No</label> @Html.TextBoxFor(m => m.Employee.BirthIdentificationNo, new { @class = "form-control" })</div>
+                <div class="form-group"><label class="form-label">Nationality</label> @Html.TextBoxFor(m => m.Employee.Nationality, new { @class = "form-control" })</div>
+                <div class="form-group"><label class="form-label">Date of Birth</label> @Html.TextBoxFor(m => m.Employee.DateOfBirth, "{0:yyyy-MM-dd}", new { @class = "form-control", type="date" })</div>
+                <div class="form-group"><label class="form-label">Gender</label> @Html.DropDownListFor(m => m.Employee.Gender, new SelectList(new[] {"Male", "Female", "Other"}), "-- Select --", new { @class = "form-control" })</div>
+                <div class="form-group"><label class="form-label">Marital Status</label> @Html.DropDownListFor(m => m.Employee.MaritalStatus, new SelectList(new[] {"Single", "Married", "Divorced", "Widowed"}), "-- Select --", new { @class = "form-control" })</div>
+                <div class="form-group"><label class="form-label">Religion</label> @Html.TextBoxFor(m => m.Employee.Religion, new { @class = "form-control" })</div>
+                <div class="form-group"><label class="form-label">Blood Group</label> @Html.DropDownListFor(m => m.Employee.BloodGroup, new SelectList(new[] {"A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"}), "-- Select --", new { @class = "form-control" })</div>
+                <div class="form-group"><label class="form-label">Email Address</label> @Html.TextBoxFor(m => m.Employee.EmailAddress, new { @class = "form-control", type="email" })</div>
+                <div class="form-group"><label class="form-label">Mobile Number</label> @Html.TextBoxFor(m => m.Employee.MobileNumber, new { @class = "form-control" })</div>
+                <div class="form-group"><label class="form-label">TIN No</label> @Html.TextBoxFor(m => m.Employee.TINNo, new { @class = "form-control" })</div>
+                <div class="form-group"><label class="form-label">Upload Image</label> <input type="file" name="ProfilePhoto" class="form-control" accept="image/*" /></div>
             </div>
         </div>
 
         <div class="form-section">
-            <h3>2. Parent Information</h3>
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>Father's Name</label>
-                    @Html.TextBoxFor(m => m.ParentInformation.FathersName, new { @class = "form-control" })
-                </div>
-                <div class="form-group">
-                    <label>Mother's Name</label>
-                    @Html.TextBoxFor(m => m.ParentInformation.MothersName, new { @class = "form-control" })
-                </div>
+            <h3 class="section-title">2. Parents Information</h3>
+            <div class="grid-4-col">
+                <div class="form-group"><label class="form-label">Father's Name</label> @Html.TextBoxFor(m => m.ParentInformation.FatherName, new { @class = "form-control" })</div>
+                <div class="form-group"><label class="form-label">Father's NID</label> @Html.TextBoxFor(m => m.ParentInformation.FatherNID, new { @class = "form-control" })</div>
+                <div class="form-group"><label class="form-label">Father's Passport No</label> @Html.TextBoxFor(m => m.ParentInformation.FatherPassportNo, new { @class = "form-control" })</div>
+                <div class="form-group"><label class="form-label">Father's Mobile</label> @Html.TextBoxFor(m => m.ParentInformation.FatherMobile, new { @class = "form-control" })</div>
+                <div class="form-group"><label class="form-label">Mother's Name</label> @Html.TextBoxFor(m => m.ParentInformation.MotherName, new { @class = "form-control" })</div>
+                <div class="form-group"><label class="form-label">Mother's NID</label> @Html.TextBoxFor(m => m.ParentInformation.MotherNID, new { @class = "form-control" })</div>
+                <div class="form-group"><label class="form-label">Mother's Passport No</label> @Html.TextBoxFor(m => m.ParentInformation.MotherPassportNo, new { @class = "form-control" })</div>
+                <div class="form-group"><label class="form-label">Mother's Mobile</label> @Html.TextBoxFor(m => m.ParentInformation.MotherMobile, new { @class = "form-control" })</div>
             </div>
         </div>
 
         <div class="form-section">
-            <h3>3. Employment Details</h3>
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>Department</label>
-                    @Html.TextBoxFor(m => m.EmploymentDetails.Department, new { @class = "form-control" })
-                </div>
-                <div class="form-group">
-                    <label>Status</label>
-                    @Html.DropDownListFor(m => m.EmploymentDetails.ActivityStatus, new SelectList(new[] {"Active", "Inactive", "On Leave", "Suspended"}), new { @class = "form-control" })
-                </div>
+            <h3 class="section-title">3. Social Media & Portfolio Links</h3>
+            <div class="grid-3-col">
+                <div class="form-group"><label class="form-label">LinkedIn Profile URL</label> @Html.TextBoxFor(m => m.SocialMediaInformation.LinkedInUrl, new { @class = "form-control", type="url" })</div>
+                <div class="form-group"><label class="form-label">Facebook Profile URL</label> @Html.TextBoxFor(m => m.SocialMediaInformation.FacebookUrl, new { @class = "form-control", type="url" })</div>
+                <div class="form-group"><label class="form-label">Twitter Handle / URL</label> @Html.TextBoxFor(m => m.SocialMediaInformation.TwitterUrl, new { @class = "form-control" })</div>
+                <div class="form-group"><label class="form-label">Instagram Handle / URL</label> @Html.TextBoxFor(m => m.SocialMediaInformation.InstagramUrl, new { @class = "form-control" })</div>
+                <div class="form-group"><label class="form-label">GitHub Profile URL</label> @Html.TextBoxFor(m => m.SocialMediaInformation.GitHubUrl, new { @class = "form-control", type="url" })</div>
+                <div class="form-group"><label class="form-label">Personal Website / Portfolio URL</label> @Html.TextBoxFor(m => m.SocialMediaInformation.PersonalWebsiteUrl, new { @class = "form-control", type="url" })</div>
             </div>
         </div>
-        
 
-        <div style="margin-top: 20px;">
-            <button type="submit" class="btn btn-success">Save Employee</button>
+        <div class="form-section">
+            <h3 class="section-title">4. Employment Details</h3>
+            <div class="grid-3-col">
+                <div class="form-group"><label class="form-label">Joining Date</label> @Html.TextBoxFor(m => m.EmploymentDetails.JoiningDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type="date" })</div>
+                <div class="form-group"><label class="form-label">Activity Status</label> @Html.DropDownListFor(m => m.EmploymentDetails.ActivityStatus, new SelectList(new[] {"Active", "Inactive", "Suspended", "On Leave"}), "-- Select --", new { @class = "form-control" })</div>
+                <div class="form-group"><label class="form-label">Department</label> @Html.TextBoxFor(m => m.EmploymentDetails.Department, new { @class = "form-control" })</div>
+                <div class="form-group"><label class="form-label">Join Designation</label> @Html.TextBoxFor(m => m.EmploymentDetails.JoinDesignation, new { @class = "form-control" })</div>
+                <div class="form-group"><label class="form-label">Employee Status</label> @Html.DropDownListFor(m => m.EmploymentDetails.EmployeeStatus, new SelectList(new[] {"Permanent", "Contract"}), "-- Select --", new { @class = "form-control" })</div>
+                <div class="form-group"><label class="form-label">Branch Name</label> @Html.TextBoxFor(m => m.EmploymentDetails.BranchName, new { @class = "form-control" })</div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3 class="section-title">5. Driving License & Tax Details</h3>
+            <div class="grid-4-col">
+                <div class="form-group"><label class="form-label">Driving License Number</label> @Html.TextBoxFor(m => m.DrivingLicense.LicenseNumber, new { @class = "form-control" })</div>
+                <div class="form-group"><label class="form-label">Category</label> @Html.TextBoxFor(m => m.DrivingLicense.Category, new { @class = "form-control" })</div>
+                <div class="form-group"><label class="form-label">Place of Issue</label> @Html.TextBoxFor(m => m.DrivingLicense.PlaceOfIssue, new { @class = "form-control" })</div>
+                <div class="form-group"><label class="form-label">License Date of Issue</label> @Html.TextBoxFor(m => m.DrivingLicense.DateOfIssue, "{0:yyyy-MM-dd}", new { @class = "form-control", type="date" })</div>
+                <div class="form-group"><label class="form-label">License Expiry Date</label> @Html.TextBoxFor(m => m.DrivingLicense.DateOfExpair, "{0:yyyy-MM-dd}", new { @class = "form-control", type="date" })</div>
+                <div class="form-group"><label class="form-label">Tax Zone</label> @Html.TextBoxFor(m => m.TaxInformation.TaxZone, new { @class = "form-control" })</div>
+                <div class="form-group"><label class="form-label">Tax Circle</label> @Html.TextBoxFor(m => m.TaxInformation.TaxCircle, new { @class = "form-control" })</div>
+                <div class="form-group"><label class="form-label">eTIN</label> @Html.TextBoxFor(m => m.TaxInformation.ETin, new { @class = "form-control" })</div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3 class="section-title">6. Address Information</h3>
+            @for (int i = 0; i < Model.Addresses.Count; i++)
+            {
+                <div class="grid-4-col">
+                    <div class="form-group"><label class="form-label">Address Type</label> @Html.DropDownListFor(m => m.Addresses[i].AddressType, new SelectList(new[] {"Present", "Permanent"}), new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Country</label> @Html.TextBoxFor(m => m.Addresses[i].Country, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Division / State</label> @Html.TextBoxFor(m => m.Addresses[i].DivisionState, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">District</label> @Html.TextBoxFor(m => m.Addresses[i].District, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Thana / Sub-district</label> @Html.TextBoxFor(m => m.Addresses[i].ThanaSubDistrict, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Union / Municipality</label> @Html.TextBoxFor(m => m.Addresses[i].UnionMunicipality, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Post Office</label> @Html.TextBoxFor(m => m.Addresses[i].PostOffice, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Post Code</label> @Html.TextBoxFor(m => m.Addresses[i].PostCode, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Block / Sector</label> @Html.TextBoxFor(m => m.Addresses[i].BlockSector, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">House / Village</label> @Html.TextBoxFor(m => m.Addresses[i].HouseVillage, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Road Number</label> @Html.TextBoxFor(m => m.Addresses[i].RoadNumber, new { @class = "form-control" })</div>
+                </div>
+            }
+        </div>
+
+        <div class="form-section">
+            <h3 class="section-title">7. Educational Background</h3>
+            @for (int i = 0; i < Model.Educations.Count; i++)
+            {
+                <div class="grid-4-col">
+                    <div class="form-group"><label class="form-label">Institution Name</label> @Html.TextBoxFor(m => m.Educations[i].InstitutionName, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Major / Group</label> @Html.TextBoxFor(m => m.Educations[i].MajorGroup, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Grade / CGPA</label> @Html.TextBoxFor(m => m.Educations[i].Grade, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Passing Year</label> @Html.TextBoxFor(m => m.Educations[i].PassingYear, new { @class = "form-control", type="number" })</div>
+                    <div class="form-group"><label class="form-label">Duration (Years)</label> @Html.TextBoxFor(m => m.Educations[i].Duration, new { @class = "form-control" })</div>
+                </div>
+            }
+        </div>
+
+        <div class="form-section">
+            <h3 class="section-title">8. Training Details</h3>
+            @for (int i = 0; i < Model.Trainings.Count; i++)
+            {
+                <div class="grid-4-col">
+                    <div class="form-group"><label class="form-label">Training Name / Title</label> @Html.TextBoxFor(m => m.Trainings[i].TrainingName, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Training Type</label> @Html.DropDownListFor(m => m.Trainings[i].TrainingType, new SelectList(new[] {"Internal", "External", "Online", "Workshop", "Seminar"}), new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Organized By</label> @Html.TextBoxFor(m => m.Trainings[i].OrganizedBy, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Start Date</label> @Html.TextBoxFor(m => m.Trainings[i].StartDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type="date" })</div>
+                    <div class="form-group"><label class="form-label">End Date</label> @Html.TextBoxFor(m => m.Trainings[i].EndDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type="date" })</div>
+                    <div class="form-group"><label class="form-label">Duration (Hours/Days)</label> @Html.TextBoxFor(m => m.Trainings[i].Duration, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Location / Venue</label> @Html.TextBoxFor(m => m.Trainings[i].TrainingLocation, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Training Mode</label> @Html.DropDownListFor(m => m.Trainings[i].TrainingMode, new SelectList(new[] {"Online", "Offline", "Hybrid"}), new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Certification Received</label> @Html.DropDownListFor(m => m.Trainings[i].CertificationReceived, new SelectList(new[] {"Yes", "No"}), new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Certificate Number</label> @Html.TextBoxFor(m => m.Trainings[i].CertificateNumber, new { @class = "form-control" })</div>
+                </div>
+            }
+        </div>
+
+        <div class="form-section">
+            <h3 class="section-title">9. Emergency Contacts</h3>
+            @for (int i = 0; i < Model.EmergencyContacts.Count; i++)
+            {
+                <div class="grid-3-col">
+                    <div class="form-group"><label class="form-label">Name</label> @Html.TextBoxFor(m => m.EmergencyContacts[i].Name, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Relation</label> @Html.TextBoxFor(m => m.EmergencyContacts[i].Relation, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Contact No</label> @Html.TextBoxFor(m => m.EmergencyContacts[i].Contact, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Email</label> @Html.TextBoxFor(m => m.EmergencyContacts[i].Email, new { @class = "form-control", type="email" })</div>
+                    <div class="form-group"><label class="form-label">Occupation</label> @Html.TextBoxFor(m => m.EmergencyContacts[i].Occupation, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Designation</label> @Html.TextBoxFor(m => m.EmergencyContacts[i].Designation, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Organization</label> @Html.TextBoxFor(m => m.EmergencyContacts[i].Organization, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Office Address</label> @Html.TextBoxFor(m => m.EmergencyContacts[i].OfficeAddress, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Home Address</label> @Html.TextBoxFor(m => m.EmergencyContacts[i].HomeAddress, new { @class = "form-control" })</div>
+                </div>
+            }
+        </div>
+
+        <div class="form-section">
+            <h3 class="section-title">10. Work Experience & Progression</h3>
+            @for (int i = 0; i < Model.WorkExperiences.Count; i++)
+            {
+                <div class="grid-3-col">
+                    <div class="form-group"><label class="form-label">Previous Employer Name</label> @Html.TextBoxFor(m => m.WorkExperiences[i].PreviousEmployerName, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Employer Location</label> @Html.TextBoxFor(m => m.WorkExperiences[i].PreviousEmployerLocation, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Employer Website</label> @Html.TextBoxFor(m => m.WorkExperiences[i].PreviousEmployerWebsite, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Previous Designation</label> @Html.TextBoxFor(m => m.WorkExperiences[i].PreviousDesignation, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Department</label> @Html.TextBoxFor(m => m.WorkExperiences[i].Department, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Job Title</label> @Html.TextBoxFor(m => m.WorkExperiences[i].JobTitle, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Start Date</label> @Html.TextBoxFor(m => m.WorkExperiences[i].EmploymentStartDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type="date" })</div>
+                    <div class="form-group"><label class="form-label">End Date</label> @Html.TextBoxFor(m => m.WorkExperiences[i].EmploymentEndDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type="date" })</div>
+                    <div class="form-group"><label class="form-label">Length of Service</label> @Html.TextBoxFor(m => m.WorkExperiences[i].LengthOfService, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Reason For Leaving</label> @Html.TextBoxFor(m => m.WorkExperiences[i].ReasonForLeaving, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Achievements</label> @Html.TextBoxFor(m => m.WorkExperiences[i].Achievements, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Responsibilities</label> @Html.TextBoxFor(m => m.WorkExperiences[i].Responsibilities, new { @class = "form-control" })</div>
+                </div>
+            }
+        </div>
+
+        <div class="form-section">
+            <h3 class="section-title">11. Skills & Competencies</h3>
+            @for (int i = 0; i < Model.Skills.Count; i++)
+            {
+                <div class="grid-4-col">
+                    <div class="form-group"><label class="form-label">Skill Name</label> @Html.TextBoxFor(m => m.Skills[i].SkillName, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Skill Type</label> @Html.DropDownListFor(m => m.Skills[i].SkillType, new SelectList(new[] {"Technical", "Soft Skill", "Language"}), new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Proficiency Level</label> @Html.DropDownListFor(m => m.Skills[i].ProficiencyLevel, new SelectList(new[] {"Beginner", "Intermediate", "Expert"}), new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Experience on Skill</label> @Html.TextBoxFor(m => m.Skills[i].ExperienceYears, new { @class = "form-control" })</div>
+                </div>
+            }
+        </div>
+
+        <div class="form-section">
+            <h3 class="section-title">12. Family Structure (Spouse & Children)</h3>
+            @for (int i = 0; i < Model.Spouses.Count; i++)
+            {
+                <div class="grid-4-col">
+                    <div class="form-group"><label class="form-label">Spouse Name</label> @Html.TextBoxFor(m => m.Spouses[i].SpouseName, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Email</label> @Html.TextBoxFor(m => m.Spouses[i].Email, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Date of Birth</label> @Html.TextBoxFor(m => m.Spouses[i].DateOfBirth, "{0:yyyy-MM-dd}", new { @class = "form-control", type="date" })</div>
+                    <div class="form-group"><label class="form-label">NID</label> @Html.TextBoxFor(m => m.Spouses[i].NID, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Contact</label> @Html.TextBoxFor(m => m.Spouses[i].Contact, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Date of Marriage</label> @Html.TextBoxFor(m => m.Spouses[i].DateOfMarriage, "{0:yyyy-MM-dd}", new { @class = "form-control", type="date" })</div>
+                </div>
+            }
+            <hr />
+            @for (int i = 0; i < Model.Children.Count; i++)
+            {
+                <div class="grid-4-col">
+                    <div class="form-group"><label class="form-label">Child Name</label> @Html.TextBoxFor(m => m.Children[i].ChildName, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Date of Birth</label> @Html.TextBoxFor(m => m.Children[i].DateOfBirth, "{0:yyyy-MM-dd}", new { @class = "form-control", type="date" })</div>
+                    <div class="form-group"><label class="form-label">NID/BIN</label> @Html.TextBoxFor(m => m.Children[i].NidBin, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Child No</label> @Html.TextBoxFor(m => m.Children[i].ChildNo, new { @class = "form-control", type="number" })</div>
+                </div>
+            }
+        </div>
+
+        <div class="form-section">
+            <h3 class="section-title">13. Banking Information</h3>
+            @for (int i = 0; i < Model.BankAccounts.Count; i++)
+            {
+                <div class="grid-3-col">
+                    <div class="form-group"><label class="form-label">Bank Name</label> @Html.TextBoxFor(m => m.BankAccounts[i].BankName, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Account Holder Name</label> @Html.TextBoxFor(m => m.BankAccounts[i].AccountHolderName, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Account Number</label> @Html.TextBoxFor(m => m.BankAccounts[i].AccountNumber, new { @class = "form-control" })</div>
+           
+                    <div class="form-group"><label class="form-label">Bank Branch</label> @Html.TextBoxFor(m => m.BankAccounts[i].BankBranch, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Is Primary Account?</label> @Html.DropDownListFor(m => m.BankAccounts[i].IsPrimaryAccount, new SelectList(new[] {"Yes", "No"}), new { @class = "form-control" })</div>
+                </div>
+            }
+        </div>
+
+        <div class="form-section">
+            <h3 class="section-title">14. Achievements & Medical History</h3>
+            @for (int i = 0; i < Model.Achievements.Count; i++)
+            {
+                <div class="grid-3-col">
+                    <div class="form-group"><label class="form-label">Award Title</label> @Html.TextBoxFor(m => m.Achievements[i].AwardTitle, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Issuing Org</label> @Html.TextBoxFor(m => m.Achievements[i].IssuingAuthority, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Date</label> @Html.TextBoxFor(m => m.Achievements[i].DateOfAchievement, "{0:yyyy-MM-dd}", new { @class = "form-control", type="date" })</div>
+                </div>
+            }
+            <hr />
+            @for (int i = 0; i < Model.MedicalHistories.Count; i++)
+            {
+                <div class="grid-3-col">
+                    <div class="form-group"><label class="form-label">Condition Name</label> @Html.TextBoxFor(m => m.MedicalHistories[i].ConditionName, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Status</label> @Html.TextBoxFor(m => m.MedicalHistories[i].Status, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Diagnosis Date</label> @Html.TextBoxFor(m => m.MedicalHistories[i].DiagnosisDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type="date" })</div>
+                </div>
+            }
+        </div>
+
+        <div class="form-section">
+            <h3 class="section-title">15. Travel, Loans & Insurance Tracking</h3>
+            @for (int i = 0; i < Model.TravelHistories.Count; i++)
+            {
+                <div class="grid-4-col">
+                    <div class="form-group"><label class="form-label">Travel Destination</label> @Html.TextBoxFor(m => m.TravelHistories[i].Destination, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Purpose</label> @Html.TextBoxFor(m => m.TravelHistories[i].TravelPurpose, new { @class = "form-control" })</div>
+                </div>
+            }
+            <hr />
+            @for (int i = 0; i < Model.LoanHistories.Count; i++)
+            {
+                <div class="grid-4-col">
+                    <div class="form-group"><label class="form-label">Loan Name</label> @Html.TextBoxFor(m => m.LoanHistories[i].LoanName, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Amount</label> @Html.TextBoxFor(m => m.LoanHistories[i].Amount, new { @class = "form-control", type="number" })</div>
+                </div>
+            }
+            <hr />
+            @for (int i = 0; i < Model.Insurances.Count; i++)
+            {
+                <div class="grid-4-col">
+                    <div class="form-group"><label class="form-label">Insurance Beneficiary Name</label> @Html.TextBoxFor(m => m.Insurances[i].Name, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Relation</label> @Html.TextBoxFor(m => m.Insurances[i].Relation, new { @class = "form-control" })</div>
+                </div>
+            }
+        </div>
+
+        <div class="form-section">
+            <h3 class="section-title">16. Hobbies, Languages, Experience Letters & Qualifications</h3>
+            @for (int i = 0; i < Model.Hobbies.Count; i++)
+            {
+                <div class="grid-4-col"><div class="form-group"><label class="form-label">Hobby Name</label> @Html.TextBoxFor(m => m.Hobbies[i].HobbyName, new { @class = "form-control" })</div></div>
+            }
+            <hr />
+            @for (int i = 0; i < Model.Languages.Count; i++)
+            {
+                <div class="grid-4-col">
+                    <div class="form-group"><label class="form-label">Language Name</label> @Html.TextBoxFor(m => m.Languages[i].LanguageName, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Skill Level</label> @Html.TextBoxFor(m => m.Languages[i].SkillLevel, new { @class = "form-control" })</div>
+                </div>
+            }
+            <hr />
+            @for (int i = 0; i < Model.ExperienceLetters.Count; i++)
+            {
+                <div class="grid-3-col">
+                    <div class="form-group"><label class="form-label">Experience Letter No</label> @Html.TextBoxFor(m => m.ExperienceLetters[i].LetterNo, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Date</label> @Html.TextBoxFor(m => m.ExperienceLetters[i].IssueDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type="date" })</div>
+                </div>
+            }
+            <hr />
+            @for (int i = 0; i < Model.Qualifications.Count; i++)
+            {
+                <div class="grid-4-col">
+                    <div class="form-group"><label class="form-label">Certification Name</label> @Html.TextBoxFor(m => m.Qualifications[i].CertificationName, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Subject</label> @Html.TextBoxFor(m => m.Qualifications[i].Subject, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Institute</label> @Html.TextBoxFor(m => m.Qualifications[i].InstituteName, new { @class = "form-control" })</div>
+                </div>
+            }
+        </div>
+
+
+
+        <div class="action-buttons">
+            <button type="submit" class="btn btn-primary">Save Complete Profile</button>
             <a href="@Url.Action("Index")" class="btn btn-secondary">Cancel</a>
         </div>
+
+
+
+
+
     }
 </div>

@@ -1,36 +1,120 @@
-﻿@model HRManager.Models.Employee
-@{ ViewBag.Title = "Edit Employee"; }
+﻿@model HRManager.ViewModels.EmployeeFormViewModel
+@{ 
+    ViewBag.Title = "Edit Comprehensive Employee Profile"; 
+}
 
-<div class="card">
-    <h2>Edit Employee: @Model.FullName</h2>
-    @using (Html.BeginForm())
+<link class="styles" rel="stylesheet" href="~/css/employee-forms.css" />
+
+<div class="emp-container">
+    <h2 class="emp-header-title">✏️ Update Employee Profile</h2>
+    
+    @using (Html.BeginForm("Edit", "Employee", FormMethod.Post, new { enctype = "multipart/form-data" })) 
     {
         @Html.AntiForgeryToken()
-        @Html.HiddenFor(m => m.EmployeeId)
-        @Html.HiddenFor(m => m.CreatedDate)
-
-        <!-- Replicate the sections from Create.cshtml here. -->
-        <!-- Because properties are bound to the model, they will automatically populate -->
         
+        @Html.HiddenFor(m => m.Employee.EmployeeId)
+        @Html.HiddenFor(m => m.Employee.ImagePath)
+        @Html.HiddenFor(m => m.ParentInformation.EmployeeId)
+        @Html.HiddenFor(m => m.SocialMediaInformation.EmployeeId)
+        @Html.HiddenFor(m => m.EmploymentDetails.EmployeeId)
+        @Html.HiddenFor(m => m.DrivingLicense.EmployeeId)
+        @Html.HiddenFor(m => m.TaxInformation.EmployeeId)
+
         <div class="form-section">
-            <h3>Personal Information</h3>
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>Employee Code*</label>
-                    @Html.TextBoxFor(m => m.EmployeeCode, new { @class = "form-control", required="required" })
-                </div>
-                <div class="form-group">
-                    <label>Full Name*</label>
-                    @Html.TextBoxFor(m => m.FullName, new { @class = "form-control", required="required" })
-                </div>
+            <h3 class="section-title">1. Core Personal Information</h3>
+            <div class="grid-4-col">
+                <div class="form-group"><label class="form-label">Employee Code *</label> @Html.TextBoxFor(m => m.Employee.EmployeeCode, new { @class = "form-control", required="required" })</div>
+                <div class="form-group"><label class="form-label">Full Name *</label> @Html.TextBoxFor(m => m.Employee.FullName, new { @class = "form-control", required="required" })</div>
+                <div class="form-group"><label class="form-label">National ID</label> @Html.TextBoxFor(m => m.Employee.NationalID, new { @class = "form-control" })</div>
+                <div class="form-group"><label class="form-label">Passport No</label> @Html.TextBoxFor(m => m.Employee.PassportNo, new { @class = "form-control" })</div>
+                <div class="form-group"><label class="form-label">Birth ID No</label> @Html.TextBoxFor(m => m.Employee.BirthIdentificationNo, new { @class = "form-control" })</div>
+                <div class="form-group"><label class="form-label">Nationality</label> @Html.TextBoxFor(m => m.Employee.Nationality, new { @class = "form-control" })</div>
+                <div class="form-group"><label class="form-label">Date of Birth</label> @Html.TextBoxFor(m => m.Employee.DateOfBirth, "{0:yyyy-MM-dd}", new { @class = "form-control", type="date" })</div>
+                <div class="form-group"><label class="form-label">Gender</label> @Html.DropDownListFor(m => m.Employee.Gender, new SelectList(new[] {"Male", "Female", "Other"}), new { @class = "form-control" })</div>
+                <div class="form-group"><label class="form-label">Marital Status</label> @Html.DropDownListFor(m => m.Employee.MaritalStatus, new SelectList(new[] {"Single", "Married", "Divorced", "Widowed"}), new { @class = "form-control" })</div>
+                <div class="form-group"><label class="form-label">Religion</label> @Html.TextBoxFor(m => m.Employee.Religion, new { @class = "form-control" })</div>
+                <div class="form-group"><label class="form-label">Blood Group</label> @Html.DropDownListFor(m => m.Employee.BloodGroup, new SelectList(new[] {"A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"}), new { @class = "form-control" })</div>
+                <div class="form-group"><label class="form-label">Email Address</label> @Html.TextBoxFor(m => m.Employee.EmailAddress, new { @class = "form-control", type="email" })</div>
+                <div class="form-group"><label class="form-label">Mobile Number</label> @Html.TextBoxFor(m => m.Employee.MobileNumber, new { @class = "form-control" })</div>
+                <div class="form-group"><label class="form-label">TIN No</label> @Html.TextBoxFor(m => m.Employee.TINNo, new { @class = "form-control" })</div>
+                <div class="form-group"><label class="form-label">Change Image</label> <input type="file" name="ProfilePhoto" class="form-control" accept="image/*" /></div>
             </div>
         </div>
-        
-        <!-- Parent, Employment, Social, Address sections map here -->
-        
-        <div style="margin-top: 20px;">
-            <button type="submit" class="btn btn-primary">Update Changes</button>
-            <a href="@Url.Action("Index")" class="btn btn-secondary">Cancel</a>
+
+        <div class="form-section">
+            <h3 class="section-title">2. Parents Information</h3>
+            <div class="grid-4-col">
+                <div class="form-group"><label class="form-label">Father's Name</label> @Html.TextBoxFor(m => m.ParentInformation.FatherName, new { @class = "form-control" })</div>
+                <div class="form-group"><label class="form-label">Father's NID</label> @Html.TextBoxFor(m => m.ParentInformation.FatherNID, new { @class = "form-control" })</div>
+                <div class="form-group"><label class="form-label">Father's Passport No</label> @Html.TextBoxFor(m => m.ParentInformation.FatherPassportNo, new { @class = "form-control" })</div>
+                <div class="form-group"><label class="form-label">Father's Mobile</label> @Html.TextBoxFor(m => m.ParentInformation.FatherMobile, new { @class = "form-control" })</div>
+                <div class="form-group"><label class="form-label">Mother's Name</label> @Html.TextBoxFor(m => m.ParentInformation.MotherName, new { @class = "form-control" })</div>
+                <div class="form-group"><label class="form-label">Mother's NID</label> @Html.TextBoxFor(m => m.ParentInformation.MotherNID, new { @class = "form-control" })</div>
+                <div class="form-group"><label class="form-label">Mother's Passport No</label> @Html.TextBoxFor(m => m.ParentInformation.MotherPassportNo, new { @class = "form-control" })</div>
+                <div class="form-group"><label class="form-label">Mother's Mobile</label> @Html.TextBoxFor(m => m.ParentInformation.MotherMobile, new { @class = "form-control" })</div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3 class="section-title">3. Employment & Branch</h3>
+            <div class="grid-3-col">
+                <div class="form-group"><label class="form-label">Joining Date</label> @Html.TextBoxFor(m => m.EmploymentDetails.JoiningDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type="date" })</div>
+                <div class="form-group"><label class="form-label">Activity Status</label> @Html.DropDownListFor(m => m.EmploymentDetails.ActivityStatus, new SelectList(new[] {"Active", "Inactive", "Suspended", "On Leave"}), new { @class = "form-control" })</div>
+                <div class="form-group"><label class="form-label">Department</label> @Html.TextBoxFor(m => m.EmploymentDetails.Department, new { @class = "form-control" })</div>
+                <div class="form-group"><label class="form-label">Join Designation</label> @Html.TextBoxFor(m => m.EmploymentDetails.JoinDesignation, new { @class = "form-control" })</div>
+                <div class="form-group"><label class="form-label">Employee Status</label> @Html.DropDownListFor(m => m.EmploymentDetails.EmployeeStatus, new SelectList(new[] {"Permanent", "Contract"}), new { @class = "form-control" })</div>
+                <div class="form-group"><label class="form-label">Branch Name</label> @Html.TextBoxFor(m => m.EmploymentDetails.BranchName, new { @class = "form-control" })</div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3 class="section-title">4. Addresses</h3>
+            @for (int i = 0; i < Model.Addresses.Count; i++)
+            {
+                @Html.HiddenFor(m => m.Addresses[i].AddressId)
+                @Html.HiddenFor(m => m.Addresses[i].EmployeeId)
+                <div class="grid-4-col">
+                    <div class="form-group"><label class="form-label">Address Type</label> @Html.TextBoxFor(m => m.Addresses[i].AddressType, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Country</label> @Html.TextBoxFor(m => m.Addresses[i].Country, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">City / State</label> @Html.TextBoxFor(m => m.Addresses[i].DivisionState, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">District</label> @Html.TextBoxFor(m => m.Addresses[i].District, new { @class = "form-control" })</div>
+                </div>
+            }
+        </div>
+
+        <div class="form-section">
+            <h3 class="section-title">5. Qualifications History</h3>
+            @for (int i = 0; i < Model.Qualifications.Count; i++)
+            {
+                @Html.HiddenFor(m => m.Qualifications[i].QualificationId)
+                @Html.HiddenFor(m => m.Qualifications[i].EmployeeId)
+                <div class="grid-3-col">
+                    <div class="form-group"><label class="form-label">Certification</label> @Html.TextBoxFor(m => m.Qualifications[i].CertificationName, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Subject</label> @Html.TextBoxFor(m => m.Qualifications[i].Subject, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Institute</label> @Html.TextBoxFor(m => m.Qualifications[i].InstituteName, new { @class = "form-control" })</div>
+                </div>
+            }
+        </div>
+
+        <div class="form-section">
+            <h3 class="section-title">6. Banking Details Mapping</h3>
+            @for (int i = 0; i < Model.BankAccounts.Count; i++)
+            {
+                @Html.HiddenFor(m => m.BankAccounts[i].BankAccountId)
+                @Html.HiddenFor(m => m.BankAccounts[i].EmployeeId)
+                <div class="grid-3-col">
+                    <div class="form-group"><label class="form-label">Bank Name</label> @Html.TextBoxFor(m => m.BankAccounts[i].BankName, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Account Number</label> @Html.TextBoxFor(m => m.BankAccounts[i].AccountNumber, new { @class = "form-control" })</div>
+                    <div class="form-group"><label class="form-label">Primary Account</label> @Html.TextBoxFor(m => m.BankAccounts[i].IsPrimaryAccount, new { @class = "form-control" })</div>
+                </div>
+            }
+        </div>
+
+
+
+        <div class="action-buttons">
+            <button type="submit" class="btn btn-primary">Update Profile Systemwide</button>
+            <a href="@Url.Action("Index")" class="btn btn-secondary">Cancel Modifications</a>
         </div>
     }
 </div>

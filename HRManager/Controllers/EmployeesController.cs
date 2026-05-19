@@ -1,151 +1,324 @@
 ﻿using HRManager.Data;
 using HRManager.Models;
+using HRManager.Repositories;
+using HRManager.ViewModels;
+using Microsoft.AspNetCore.Hosting; // Added for IWebHostEnvironment
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.IO; // Added for File handling
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace HRManager.Controllers
 {
     public class EmployeeController : Controller
     {
-        // Define a readonly field for the database context
-        private readonly HRManagerDbContext db;
+        private readonly IEmployeeRepository _employeeRepository;
+        private readonly HRManagerDbContext _context;
+        private readonly IWebHostEnvironment _webHostEnvironment; // Needed to get the wwwroot path
 
-        // Inject the DbContext via the constructor (.NET 9 standard)
-        public EmployeeController(HRManagerDbContext context)
+        // Injected Repository, DbContext, and WebHostEnvironment
+        public EmployeeController(IEmployeeRepository employeeRepository, HRManagerDbContext context, IWebHostEnvironment webHostEnvironment)
         {
-            db = context;
+            _employeeRepository = employeeRepository;
+            _context = context;
+            _webHostEnvironment = webHostEnvironment;
         }
 
-        // GET: /Employee
-        public IActionResult Index(string searchString)
+        // ==========================================================================
+        // 1. INDEX LIST VIEW
+        // ==========================================================================
+        // GET: Employee List
+        public async Task<IActionResult> Index(string? searchString)
         {
-            var employees = db.Employees.Include(e => e.EmploymentDetails).AsQueryable();
+            ViewData["CurrentFilter"] = searchString;
+            var employees = await _employeeRepository.GetAllEmployeesAsync(searchString);
+            return View(employees);
+        }
 
-            if (!string.IsNullOrEmpty(searchString))
+        // ==========================================================================
+        // 2. DETAILS VIEW
+        // ==========================================================================
+        // GET: Employee/Details/5
+        public async Task<IActionResult> Details(int id)
+        {
+            var employee = await _employeeRepository.GetEmployeeByIdAsync(id);
+            if (employee == null)
             {
-                employees = employees.Where(e => e.FullName.Contains(searchString) || e.EmployeeCode.Contains(searchString));
+                return NotFound();
             }
-
-            return View(employees.ToList());
-        }
-
-        // GET: /Employee/Details/5
-        public IActionResult Details(int? id)
-        {
-            if (id == null) return BadRequest();
-
-            var employee = db.Employees
-                .Include(e => e.ParentInformation)
-                .Include(e => e.SocialMediaInformation)
-                .Include(e => e.EmploymentDetails)
-                .Include(e => e.AddressInformation)
-                .SingleOrDefault(e => e.EmployeeId == id);
-
-            if (employee == null) return NotFound();
-
             return View(employee);
         }
 
-        // GET: /Employee/Create
+        // ==========================================================================
+        // 3. CREATE OPERATION (GET & POST)
+        // ==========================================================================
+        // GET: Employee/Create Form
         public IActionResult Create()
         {
-            return View(new Employee());
+            var viewModel = new EmployeeFormViewModel();
+
+            // Guarantee at least one blank row so the user can add new data
+            viewModel.Addresses = new System.Collections.Generic.List<AddressInformation> { new AddressInformation() };
+            viewModel.Educations = new System.Collections.Generic.List<EducationInformation> { new EducationInformation() };
+
+            return View(viewModel);
         }
 
-        // POST: /Employee/Create
+        // POST: Employee/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Employee employee)
+        public async Task<IActionResult> Create(EmployeeFormViewModel model)
         {
             if (ModelState.IsValid)
             {
-                // Ensure Unique Constraints (Basic check)
-                if (db.Employees.Any(e => e.EmployeeCode == employee.EmployeeCode))
+                // Handle Profile Photo Upload before saving
+                if (model.ProfilePhoto != null && model.ProfilePhoto.Length > 0)
                 {
-                    ModelState.AddModelError("EmployeeCode", "Employee Code already exists.");
-                    return View(employee);
+                    string uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(model.ProfilePhoto.FileName);
+                    string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images");
+                    Directory.CreateDirectory(uploadsFolder); // Ensures the folder exists
+                    string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await model.ProfilePhoto.CopyToAsync(fileStream);
+                    }
+                    model.Employee.ImagePath = "/images/" + uniqueFileName;
                 }
 
-                employee.CreatedDate = DateTime.Now;
-                db.Employees.Add(employee);
-                db.SaveChanges();
-                return RedirectToAction(nameof(Index));
+                // Accessing the database transaction engine safely
+                using var transaction = await _context.Database.BeginTransactionAsync();
+                try
+                {
+                    // 1. Save the primary Employee master record first
+                    _context.Employees.Add(model.Employee);
+                    await _context.SaveChangesAsync(); // Generates the EmployeeId identity key
+
+                    int generatedId = model.Employee.EmployeeId;
+
+                    // 2. Bind the primary identity key to all 1-to-1 navigation objects
+                    model.EmploymentDetails.EmployeeId = generatedId;
+                    model.ParentInformation.EmployeeId = generatedId;
+                    model.SocialMediaInformation.EmployeeId = generatedId;
+                    model.DrivingLicense.EmployeeId = generatedId;
+                    model.TaxInformation.EmployeeId = generatedId;
+
+                    // 3. Queue up the 1-to-1 inserts inside the context tracking engine
+                    _context.EmploymentDetails.Add(model.EmploymentDetails);
+                    _context.ParentInformations.Add(model.ParentInformation);
+                    _context.SocialMediaInformations.Add(model.SocialMediaInformation);
+                    _context.DrivingLicenses.Add(model.DrivingLicense);
+                    _context.TaxInformations.Add(model.TaxInformation);
+
+                    // 4. Loop and bind one-to-many collection models safely
+                    if (model.Addresses != null && model.Addresses.Any())
+                    {
+                        foreach (var address in model.Addresses)
+                        {
+                            // Only save if they actually typed an address line
+                            if (!string.IsNullOrWhiteSpace(address.AddressLine))
+                            {
+                                address.EmployeeId = generatedId;
+                                _context.AddressInformations.Add(address);
+                            }
+                        }
+                    }
+
+                    if (model.Educations != null && model.Educations.Any())
+                    {
+                        foreach (var education in model.Educations)
+                        {
+                            // Only save if they actually typed a degree name
+                            if (!string.IsNullOrWhiteSpace(education.DegreeName))
+                            {
+                                education.EmployeeId = generatedId;
+                                _context.EducationInformations.Add(education);
+                            }
+                        }
+                    }
+
+                    // 5. Commit everything to the physical database at once
+                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    ModelState.AddModelError("", $"Failed to compile and commit the database transaction: {ex.Message}");
+                }
             }
-            return View(employee);
+
+            // If validation goes wrong, reload the form with user selections preserved
+            return View(model);
         }
 
-        // GET: /Employee/Edit/5
-        public IActionResult Edit(int? id)
+        // ==========================================================================
+        // 4. EDIT OPERATION (GET & POST)
+        // ==========================================================================
+        // GET: Employee/Edit/5
+        public async Task<IActionResult> Edit(int id)
         {
-            if (id == null) return BadRequest();
+            var employee = await _employeeRepository.GetEmployeeByIdAsync(id);
+            if (employee == null)
+            {
+                return NotFound();
+            }
 
-            var employee = db.Employees
-                .Include(e => e.ParentInformation)
-                .Include(e => e.SocialMediaInformation)
-                .Include(e => e.EmploymentDetails)
-                .Include(e => e.AddressInformation)
-                .SingleOrDefault(e => e.EmployeeId == id);
+            // Populate our unified viewmodel with the existing database values
+            var viewModel = new EmployeeFormViewModel
+            {
+                Employee = employee,
+                ParentInformation = employee.ParentInformation ?? new ParentInformation(),
+                EmploymentDetails = employee.EmploymentDetails ?? new EmploymentDetails(),
+                SocialMediaInformation = employee.SocialMediaInformation ?? new SocialMediaInformation(),
+                DrivingLicense = employee.DrivingLicense ?? new DrivingLicense(),
+                TaxInformation = employee.TaxInformation ?? new TaxInformation(),
+                Addresses = employee.Addresses?.ToList() ?? new System.Collections.Generic.List<AddressInformation>(),
+                Educations = employee.Educations?.ToList() ?? new System.Collections.Generic.List<EducationInformation>()
+            };
 
-            if (employee == null) return NotFound();
-            return View(employee);
+            // Guarantee at least one blank row so the user can add new data if they didn't have any before
+            if (viewModel.Addresses == null || !viewModel.Addresses.Any())
+            {
+                viewModel.Addresses = new System.Collections.Generic.List<AddressInformation> { new AddressInformation() };
+            }
+            if (viewModel.Educations == null || !viewModel.Educations.Any())
+            {
+                viewModel.Educations = new System.Collections.Generic.List<EducationInformation> { new EducationInformation() };
+            }
+
+            return View(viewModel);
         }
 
-        // POST: /Employee/Edit/5
+        // POST: Employee/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(Employee employee)
+        public async Task<IActionResult> Edit(int id, EmployeeFormViewModel model)
         {
+            if (id != model.Employee.EmployeeId)
+            {
+                return NotFound();
+            }
+
             if (ModelState.IsValid)
             {
-                employee.ModifiedDate = DateTime.Now;
-                db.Entry(employee).State = EntityState.Modified;
+                try
+                {
+                    // Handle Profile Photo Upload before saving
+                    if (model.ProfilePhoto != null && model.ProfilePhoto.Length > 0)
+                    {
+                        string uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(model.ProfilePhoto.FileName);
+                        string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images");
+                        Directory.CreateDirectory(uploadsFolder);
+                        string filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
-                if (employee.ParentInformation != null) db.Entry(employee.ParentInformation).State = EntityState.Modified;
-                if (employee.SocialMediaInformation != null) db.Entry(employee.SocialMediaInformation).State = EntityState.Modified;
-                if (employee.EmploymentDetails != null) db.Entry(employee.EmploymentDetails).State = EntityState.Modified;
-                if (employee.AddressInformation != null) db.Entry(employee.AddressInformation).State = EntityState.Modified;
+                        using (var fileStream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await model.ProfilePhoto.CopyToAsync(fileStream);
+                        }
 
-                db.SaveChanges();
-                return RedirectToAction(nameof(Index));
+                        model.Employee.ImagePath = "/images/" + uniqueFileName;
+                    }
+
+                    // 1. We update the core employee and ALL related 1-to-1 tracking models
+                    _context.Employees.Update(model.Employee);
+                    _context.EmploymentDetails.Update(model.EmploymentDetails);
+                    _context.ParentInformations.Update(model.ParentInformation);
+                    _context.SocialMediaInformations.Update(model.SocialMediaInformation);
+                    _context.DrivingLicenses.Update(model.DrivingLicense);
+                    _context.TaxInformations.Update(model.TaxInformation);
+
+                    // 2. Loop through Lists and update them based on their exact IDs
+                    if (model.Addresses != null)
+                    {
+                        foreach (var address in model.Addresses)
+                        {
+                            if (!string.IsNullOrWhiteSpace(address.AddressLine))
+                            {
+                                if (address.AddressId == 0) // New item added via the empty row
+                                {
+                                    address.EmployeeId = model.Employee.EmployeeId;
+                                    _context.AddressInformations.Add(address);
+                                }
+                                else // Existing item being updated
+                                {
+                                    _context.AddressInformations.Update(address);
+                                }
+                            }
+                        }
+                    }
+
+                    if (model.Educations != null)
+                    {
+                        foreach (var education in model.Educations)
+                        {
+                            if (!string.IsNullOrWhiteSpace(education.DegreeName))
+                            {
+                                if (education.EducationId == 0) // New item added via the empty row
+                                {
+                                    education.EmployeeId = model.Employee.EmployeeId;
+                                    _context.EducationInformations.Add(education);
+                                }
+                                else // Existing item being updated
+                                {
+                                    _context.EducationInformations.Update(education);
+                                }
+                            }
+                        }
+                    }
+
+                    // 3. Commit the changes to the database
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", $"Unable to save changes: {ex.Message}");
+                }
+            }
+
+            // If validation fails, return the form with their inputs preserved
+            return View(model);
+        }
+
+        // ==========================================================================
+        // 5. DELETE OPERATION (GET & POST)
+        // ==========================================================================
+        // GET: Employee/Delete/5
+        public async Task<IActionResult> Delete(int id)
+        {
+            var employee = await _employeeRepository.GetEmployeeByIdAsync(id);
+            if (employee == null)
+            {
+                return NotFound();
             }
             return View(employee);
         }
 
-        // GET: /Employee/Delete/5
-        public IActionResult Delete(int? id)
-        {
-            if (id == null) return BadRequest();
-            var employee = db.Employees.Find(id);
-            if (employee == null) return NotFound();
-            return View(employee);
-        }
-
-        // POST: /Employee/Delete/5
+        // POST: Employee/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var employee = db.Employees
-                .Include(e => e.ParentInformation)
-                .Include(e => e.SocialMediaInformation)
-                .Include(e => e.EmploymentDetails)
-                .Include(e => e.AddressInformation)
-                .SingleOrDefault(e => e.EmployeeId == id);
-
-            if (employee != null)
+            try
             {
-                // Delete related entities manually since Cascade delete behaviors are restricted for safety
-                if (employee.ParentInformation != null) db.ParentInformations.Remove(employee.ParentInformation);
-                if (employee.SocialMediaInformation != null) db.SocialMediaInformations.Remove(employee.SocialMediaInformation);
-                if (employee.EmploymentDetails != null) db.EmploymentDetails.Remove(employee.EmploymentDetails);
-                if (employee.AddressInformation != null) db.AddressInformations.Remove(employee.AddressInformation);
-
-                db.Employees.Remove(employee);
-                db.SaveChanges();
+                await _employeeRepository.DeleteEmployeeAsync(id);
+                return RedirectToAction(nameof(Index));
             }
-            return RedirectToAction(nameof(Index));
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", $"Unable to delete employee due to data constraint properties: {ex.Message}");
+
+                // Re-fetch employee data to show on the confirmation page again safely
+                var employee = await _employeeRepository.GetEmployeeByIdAsync(id);
+                return View(employee);
+            }
         }
     }
 }
+

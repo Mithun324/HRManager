@@ -1,16 +1,59 @@
 ﻿@model HRManager.Models.Employee
-@{ ViewBag.Title = "Delete Confirmation"; }
+@{
+    ViewData["Title"] = "Delete Employee";
+}
 
-<div class="card" style="border-left: 5px solid var(--danger);">
-    <h2>Confirm Deletion</h2>
-    <p>Are you sure you want to permanently delete <strong>@Model.FullName</strong> (@Model.EmployeeCode)?</p>
-    <p><em>Warning: This will also delete all associated Parent, Address, Social Media, and Employment records.</em></p>
+<div style="max-width: 800px; margin: 3rem auto; font-family: 'Segoe UI', system-ui, sans-serif; color: #333;">
     
-    @using (Html.BeginForm()) {
-        @Html.AntiForgeryToken()
-        <div style="margin-top: 20px;">
-            <button type="submit" class="btn btn-danger">Yes, Delete Employee</button>
-            <a href="@Url.Action("Index")" class="btn btn-secondary">Cancel</a>
+    <div style="background: #fff3cd; color: #856404; padding: 1.5rem; border-radius: 8px 8px 0 0; border: 1px solid #ffeeba; border-bottom: none; display: flex; align-items: center; gap: 1rem;">
+        <span style="font-size: 2rem;">⚠️</span>
+        <div>
+            <h2 style="margin: 0; font-size: 1.5rem;">Delete Employee Record</h2>
+            <p style="margin: 0.25rem 0 0; font-weight: 600;">Are you absolutely sure you want to permanently delete this employee?</p>
         </div>
-    }
+    </div>
+
+    <div style="background: #fff; padding: 2rem; border: 1px solid #dee2e6; border-radius: 0 0 8px 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+        
+        <h3 style="margin-top: 0; color: #2c3e50; border-bottom: 2px solid #f1f2f6; padding-bottom: 0.5rem;">Employee Summary</h3>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.5rem; margin-bottom: 2rem;">
+            <div>
+                <span style="color: #7f8c8d; font-size: 0.9rem; font-weight: 600; text-transform: uppercase;">Employee Code</span>
+                <div style="font-size: 1.1rem; font-weight: 700; color: #2c3e50;">@Model.EmployeeCode</div>
+            </div>
+            <div>
+                <span style="color: #7f8c8d; font-size: 0.9rem; font-weight: 600; text-transform: uppercase;">Full Name</span>
+                <div style="font-size: 1.1rem; font-weight: 700; color: #2c3e50;">@Model.FullName</div>
+            </div>
+            <div>
+                <span style="color: #7f8c8d; font-size: 0.9rem; font-weight: 600; text-transform: uppercase;">Department</span>
+                <div style="font-size: 1.1rem; color: #333;">@(Model.EmploymentDetails?.Department ?? "Unassigned")</div>
+            </div>
+            <div>
+                <span style="color: #7f8c8d; font-size: 0.9rem; font-weight: 600; text-transform: uppercase;">Contact</span>
+                <div style="font-size: 1.1rem; color: #333;">@(Model.EmailAddress ?? Model.MobileNumber ?? "N/A")</div>
+            </div>
+        </div>
+
+        <div style="background: #f8d7da; color: #721c24; padding: 1rem; border-radius: 6px; margin-bottom: 2rem; font-size: 0.95rem;">
+            <strong>Note:</strong> Deleting this core record will also cascade and delete all associated data (Addresses, Education, Tax info, etc.) linked to this employee in the database. This action cannot be undone.
+        </div>
+
+        @using (Html.BeginForm("Delete", "Employee", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(model => model.EmployeeId)
+            
+            <div style="display: flex; gap: 1rem;">
+                <button type="submit" class="btn btn-danger" style="background: #e74c3c; color: white; padding: 0.75rem 2rem; border: none; border-radius: 4px; font-size: 1rem; font-weight: 600; cursor: pointer;">
+                    Yes, Delete Permanently
+                </button>
+                <a href="@Url.Action("Index")" class="btn btn-secondary" style="background: #f8f9fa; color: #333; padding: 0.75rem 2rem; border: 1px solid #dee2e6; border-radius: 4px; font-size: 1rem; text-decoration: none; font-weight: 600;">
+                    Cancel
+                </a>
+            </div>
+        }
+    </div>
 </div>
+

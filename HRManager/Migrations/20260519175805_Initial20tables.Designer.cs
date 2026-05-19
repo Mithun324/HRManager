@@ -4,6 +4,7 @@ using HRManager.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HRManager.Migrations
 {
     [DbContext(typeof(HRManagerDbContext))]
-    partial class HRManagerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260519175805_Initial20tables")]
+    partial class Initial20tables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -69,16 +72,10 @@ namespace HRManager.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AddressId"));
 
-                    b.Property<string>("AddressLine")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("AddressType")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("BlockSector")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("City")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Country")
@@ -138,6 +135,9 @@ namespace HRManager.Migrations
                     b.Property<string>("BankName")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("BicSwiftCode")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
 
@@ -162,9 +162,6 @@ namespace HRManager.Migrations
                     b.Property<string>("BloodGroup")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ChildName")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("ChildNo")
                         .HasColumnType("int");
 
@@ -184,6 +181,9 @@ namespace HRManager.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("MaritalStatus")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Nationality")
@@ -216,7 +216,7 @@ namespace HRManager.Migrations
                     b.Property<string>("Category")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("DateOfExpair")
+                    b.Property<DateTime?>("DateOfExpiry")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("DateOfIssue")
@@ -250,9 +250,6 @@ namespace HRManager.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EducationId"));
 
-                    b.Property<string>("DegreeName")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Duration")
                         .HasColumnType("nvarchar(max)");
 
@@ -275,7 +272,7 @@ namespace HRManager.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("EducationInformations");
+                    b.ToTable("EducationInformation");
                 });
 
             modelBuilder.Entity("HRManager.Models.EmergencyContact", b =>
@@ -286,7 +283,7 @@ namespace HRManager.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ContactId"));
 
-                    b.Property<string>("Contact")
+                    b.Property<string>("ContactNo")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Designation")
@@ -459,9 +456,6 @@ namespace HRManager.Migrations
                     b.Property<string>("Department")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Designation")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("EmployeeStatus")
                         .HasColumnType("nvarchar(max)");
 
@@ -470,9 +464,6 @@ namespace HRManager.Migrations
 
                     b.Property<DateTime?>("JoiningDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("Shift")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("EmployeeId");
 
@@ -560,7 +551,7 @@ namespace HRManager.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LoanId"));
 
                     b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18, 2)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
@@ -628,10 +619,10 @@ namespace HRManager.Migrations
                     b.Property<string>("FatherMobile")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("FatherNID")
+                    b.Property<string>("FatherName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("FatherName")
+                    b.Property<string>("FatherNid")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FatherPassportNo")
@@ -640,10 +631,10 @@ namespace HRManager.Migrations
                     b.Property<string>("MotherMobile")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("MotherNID")
+                    b.Property<string>("MotherName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("MotherName")
+                    b.Property<string>("MotherNid")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("MotherPassportNo")
@@ -740,9 +731,6 @@ namespace HRManager.Migrations
                     b.Property<string>("PersonalWebsiteUrl")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PortfolioUrl")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("TwitterUrl")
                         .HasColumnType("nvarchar(max)");
 
@@ -762,7 +750,7 @@ namespace HRManager.Migrations
                     b.Property<string>("BloodGroup")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Contact")
+                    b.Property<string>("ContactNo")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("DateOfBirth")
@@ -795,16 +783,16 @@ namespace HRManager.Migrations
                     b.Property<string>("MarriageCertificateUrl")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("NID")
+                    b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Nationality")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Relationship")
+                    b.Property<string>("Nid")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("SpouseName")
+                    b.Property<string>("Relationship")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("SpouseId");
@@ -819,13 +807,13 @@ namespace HRManager.Migrations
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
 
-                    b.Property<string>("ETin")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("TaxCircle")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TaxZone")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("eTin")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("EmployeeId");
@@ -869,9 +857,6 @@ namespace HRManager.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TrainingMode")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TrainingName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TrainingTitle")
@@ -934,17 +919,20 @@ namespace HRManager.Migrations
                     b.Property<string>("Department")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Designation")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
 
                     b.Property<string>("EmployerLocation")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("EmploymentEndDate")
-                        .HasColumnType("datetime2");
+                    b.Property<string>("EmployerName")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("EmploymentStartDate")
-                        .HasColumnType("datetime2");
+                    b.Property<string>("EmployerWebsite")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
@@ -955,18 +943,6 @@ namespace HRManager.Migrations
                     b.Property<string>("LengthOfService")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PreviousDesignation")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PreviousEmployerLocation")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PreviousEmployerName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PreviousEmployerWebsite")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("ReasonForLeaving")
                         .HasColumnType("nvarchar(max)");
 
@@ -975,9 +951,6 @@ namespace HRManager.Migrations
 
                     b.Property<DateTime?>("StartDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("WorkExperienceId")
-                        .HasColumnType("int");
 
                     b.HasKey("ExperienceId");
 

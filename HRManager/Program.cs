@@ -1,10 +1,15 @@
 using HRManager.Data;
-using Microsoft.EntityFrameworkCore; // <-- This is all you need now!
+using Microsoft.EntityFrameworkCore; 
+using HRManager.Repositories;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
 // 1. Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+
 
 // 2. Configure Entity Framework Core with SQL Server
 var connectionString = builder.Configuration.GetConnectionString("HRManagerConnection")
