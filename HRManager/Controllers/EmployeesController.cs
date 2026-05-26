@@ -30,7 +30,6 @@ namespace HRManager.Controllers
         // ==========================================================================
         // 1. INDEX LIST VIEW
         // ==========================================================================
-        // GET: Employee List
         public async Task<IActionResult> Index(string? searchString)
         {
             ViewData["CurrentFilter"] = searchString;
@@ -41,7 +40,6 @@ namespace HRManager.Controllers
         // ==========================================================================
         // 2. DETAILS VIEW
         // ==========================================================================
-        // GET: Employee/Details/5
         public async Task<IActionResult> Details(int id)
         {
             var employee = await _employeeRepository.GetEmployeeByIdAsync(id);
@@ -55,14 +53,28 @@ namespace HRManager.Controllers
         // ==========================================================================
         // 3. CREATE OPERATION (GET & POST)
         // ==========================================================================
-        // GET: Employee/Create Form
         public IActionResult Create()
         {
             var viewModel = new EmployeeFormViewModel();
 
-            // Guarantee at least one blank row so the user can add new data
-            viewModel.Addresses = new System.Collections.Generic.List<AddressInformation> { new AddressInformation() };
-            viewModel.Educations = new System.Collections.Generic.List<EducationInformation> { new EducationInformation() };
+                // Exact type match instantiations to bypass reference faults
+                Addresses = new List<AddressInformation> { new AddressInformation() },
+                Educations = new List<EducationInformation> { new EducationInformation() },
+                Trainings = new List<TrainingInformation> { new TrainingInformation() },
+                EmergencyContact = new List<EmergencyContact> { new EmergencyContact() },
+                WorkExperiences = new List<WorkExperience> { new WorkExperience() },
+                Skills = new List<SkillCompetency> { new SkillCompetency() },
+                Spouses = new List<SpouseInformation> { new SpouseInformation() },
+                Children = new List<ChildInformation> { new ChildInformation() },
+                BankAccounts = new List<BankingInformation> { new BankingInformation() },
+                Achievements = new List<AchievementAward> { new AchievementAward() },
+                MedicalHistories = new List<MedicalHistory> { new MedicalHistory() },
+                TravelHistories = new List<TravelHistory> { new TravelHistory() },
+                LoanHistories = new List<LoanHistory> { new LoanHistory() },
+                LanguageSkill = new List<LanguageSkill> { new LanguageSkill() },
+                ExperienceLetters = new List<ExperienceLetter> { new ExperienceLetter() },
+                ProfessionalQualification = new List<ProfessionalQualification> { new ProfessionalQualification() }
+            };
 
             return View(viewModel);
         }
