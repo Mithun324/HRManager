@@ -1,26 +1,123 @@
 ﻿@model HRManager.Models.Employee
-@{ ViewBag.Title = "Employee Details"; }
+@{ 
+    ViewBag.Title = "Master Summary Profile Lookup"; 
+}
 
-<div class="card">
-    <h2>@Model.FullName's Profile</h2>
+<link rel="stylesheet" href="~/css/employee-forms.css" />
+
+<div class="emp-container">
     
-    <div class="form-section">
-        <h3>Personal Details</h3>
-        <p><strong>Code:</strong> @Model.EmployeeCode</p>
-        <p><strong>Email:</strong> @Model.EmailAddress</p>
-        <p><strong>Mobile:</strong> @Model.MobileNumber</p>
+    <div class="details-summary-card">
+        @if (!string.IsNullOrEmpty(Model.ImagePath))
+        {
+            <img src="@Model.ImagePath" alt="Employee Photo" class="profile-img" />
+        }
+        else
+        {
+            <div class="profile-img" style="background:#e9ecef; display:flex; align-items:center; justify-content:center; font-size:3rem;">👤</div>
+        }
+        <div style="flex-grow: 1;">
+            <h1 style="margin: 0; color: #2c3e50;">@Model.FullName</h1>
+            <p style="color: #7f8c8d; font-size: 1.2rem; margin: 0.5rem 0;">
+                @(Model.EmploymentDetails?.JoinDesignation ?? "Unassigned Designation") | @(Model.EmploymentDetails?.Department ?? "Unassigned Dept")
+            </p>
+            <p><strong>Corporate Identifier Code:</strong> @Model.EmployeeCode | <strong>Status Indicators:</strong> @(Model.EmploymentDetails?.ActivityStatus ?? "Active")</p>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+            <a href="@Url.Action("Edit", new { id = Model.EmployeeId })" class="btn btn-primary">✏️ Modify Record</a>
+            <a href="@Url.Action("Index")" class="btn btn-secondary">⬅️ System Index</a>
+        </div>
+    </div>
+
+    <div class="grid-2-col">
+        
+        <div>
+            <div class="form-section">
+                <h3 class="section-title">Personal Verification Framework</h3>
+                <table class="data-table">
+                    <tr><td>National ID</td><td>@(Model.NationalID ?? "N/A")</td></tr>
+                    <tr><td>Passport Registry No</td><td>@(Model.PassportNo ?? "N/A")</td></tr>
+                    <tr><td>Birth Registry Index</td><td>@(Model.BirthIdentificationNo ?? "N/A")</td></tr>
+                    <tr><td>TIN Number Data</td><td>@(Model.TINNo ?? "N/A")</td></tr>
+                    <tr><td>Date of Birth Vector</td><td>@(Model.DateOfBirth?.ToString("MMMM dd, yyyy") ?? "N/A")</td></tr>
+                    <tr><td>Blood Group Registry</td><td>@(Model.BloodGroup ?? "N/A")</td></tr>
+                    <tr><td>Marital Status Metric</td><td>@(Model.MaritalStatus ?? "N/A")</td></tr>
+                    <tr><td>Religion Identifier</td><td>@(Model.Religion ?? "N/A")</td></tr>
+                    <tr><td>Contact Communications</td><td>@(Model.MobileNumber ?? "N/A") | @(Model.EmailAddress ?? "N/A")</td></tr>
+                </table>
+            </div>
+
+            <div class="form-section">
+                <h3 class="section-title">Driving License & Regulatory Tracking</h3>
+                <table class="data-table">
+                    <tr><td>License Number ID</td><td>@(Model.DrivingLicense?.LicenseNumber ?? "N/A")</td></tr>
+                    <tr><td>Category Authorization</td><td>@(Model.DrivingLicense?.Category ?? "N/A")</td></tr>
+                    <tr><td>Place of Verification</td><td>@(Model.DrivingLicense?.PlaceOfIssue ?? "N/A")</td></tr>
+                    <tr><td>License Expiration Date</td><td>@(Model.DrivingLicense?.DateOfExpair?.ToString("yyyy-MM-dd") ?? "N/A")</td></tr>
+                </table>
+            </div>
+        </div>
+
+        <div>
+            <div class="form-section">
+                <h3 class="section-title">Corporate Structure & Operations</h3>
+                <table class="data-table">
+                    <tr><td>Operational Branch</td><td>@(Model.EmploymentDetails?.BranchName ?? "N/A")</td></tr>
+                    <tr><td>Corporate Tenure Start</td><td>@(Model.EmploymentDetails?.JoiningDate?.ToString("MMMM dd, yyyy") ?? "N/A")</td></tr>
+                    <tr><td>Contract Allocation Matrix</td><td>@(Model.EmploymentDetails?.EmployeeStatus ?? "N/A")</td></tr>
+                    <tr><td>Tax Assessment Zone</td><td>@(Model.TaxInformation?.TaxZone ?? "N/A")</td></tr>
+                    <tr><td>Tax Circle Specification</td><td>@(Model.TaxInformation?.TaxCircle ?? "N/A")</td></tr>
+                    <tr><td>eTIN Standard Record</td><td>@(Model.TaxInformation?.ETin ?? "N/A")</td></tr>
+                </table>
+            </div>
+
+            <div class="form-section">
+                <h3 class="section-title">Ancestry Registry Record</h3>
+                <table class="data-table">
+                    <tr><td>Father Identification Name</td><td>@(Model.ParentInformation?.FatherName ?? "N/A")</td></tr>
+                    <tr><td>Father NID Trace</td><td>@(Model.ParentInformation?.FatherNID ?? "N/A")</td></tr>
+                    <tr><td>Mother Identification Name</td><td>@(Model.ParentInformation?.MotherName ?? "N/A")</td></tr>
+                    <tr><td>Mother NID Trace</td><td>@(Model.ParentInformation?.MotherNID ?? "N/A")</td></tr>
+                </table>
+            </div>
+        </div>
+        
     </div>
 
     <div class="form-section">
-        <h3>Employment Details</h3>
-        <p><strong>Department:</strong> @Model.EmploymentDetails?.Department</p>
-        <p><strong>Status:</strong> <span style="color:var(--accent); font-weight:bold;">@Model.EmploymentDetails?.ActivityStatus</span></p>
+        <h3 class="section-title">Historical Work Experience Data Arrays</h3>
+        @if (Model.WorkExperiences != null && Model.WorkExperiences.Any())
+        {
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Employer Organization</th>
+                        <th>Designation Allocation</th>
+                        <th>Tenure Range</th>
+                        <th>Reason for Separation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var exp in Model.WorkExperiences)
+                    {
+                        <tr>
+                            <td>@exp.PreviousEmployerName (@exp.PreviousEmployerLocation)</td>
+                            <td>@exp.JobTitle / @exp.PreviousDesignation</td>
+                            <td>@exp.EmploymentStartDate?.ToString("yyyy") - @exp.EmploymentEndDate?.ToString("yyyy")</td>
+                            <td>@exp.ReasonForLeaving</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p>No verified background logs identified within historical databases.</p>
+        }
     </div>
-    
-    <!-- Parent, Address, and Social sections map here -->
 
-    <div style="margin-top: 20px;">
-        <a href="@Url.Action("Edit", new { id = Model.EmployeeId })" class="btn btn-primary">Edit Profile</a>
-        <a href="@Url.Action("Index")" class="btn btn-secondary">Back to List</a>
-    </div>
+
+
+
+
 </div>

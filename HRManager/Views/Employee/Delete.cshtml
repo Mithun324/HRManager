@@ -1,16 +1,85 @@
 ﻿@model HRManager.Models.Employee
-@{ ViewBag.Title = "Delete Confirmation"; }
+@{
+    ViewBag.Title = "Terminate Profile Confirmation";
+}
 
-<div class="card" style="border-left: 5px solid var(--danger);">
-    <h2>Confirm Deletion</h2>
-    <p>Are you sure you want to permanently delete <strong>@Model.FullName</strong> (@Model.EmployeeCode)?</p>
-    <p><em>Warning: This will also delete all associated Parent, Address, Social Media, and Employment records.</em></p>
+<link rel="stylesheet" href="~/css/employee-forms.css" />
     
-    @using (Html.BeginForm()) {
-        @Html.AntiForgeryToken()
-        <div style="margin-top: 20px;">
-            <button type="submit" class="btn btn-danger">Yes, Delete Employee</button>
-            <a href="@Url.Action("Index")" class="btn btn-secondary">Cancel</a>
+<div class="emp-container">
+    <div style="background-color: #f8d7da; color: #721c24; padding: 20px; border-radius: 8px; margin-bottom: 25px; border: 1px solid #f5c6cb;">
+        <h2 style="margin-top: 0;">⚠️ Critical Confirmation Required</h2>
+        <p style="margin-bottom: 0; font-size: 1.1rem;"> Are you entirely certain you want to delete the file registry for <strong>@Model.FullName</strong>? This action destroys all connected internal databases systemwide and cannot be undone.</p>
         </div>
-    }
+
+    <div class="details-summary-card" style="border-left: 5px solid #dc3545;">
+        @if (!string.IsNullOrEmpty(Model.ImagePath))
+        {
+            <img src="@Model.ImagePath" alt="Employee Photo" class="profile-img" />
+        }
+        else
+        {
+            <div class="profile-img" style="background:#e9ecef; display:flex; align-items:center; justify-content:center; font-size:3rem;">👤</div>
+        }
+        <div style="flex-grow: 1;">
+            <h1 style="margin: 0; color: #2c3e50;">@Model.FullName</h1>
+            <p style="color: #7f8c8d; font-size: 1.2rem; margin: 0.5rem 0;">
+                @(Model.EmploymentDetails?.JoinDesignation ?? "Unassigned") | @(Model.EmploymentDetails?.Department ?? "Unassigned")
+            </p>
+            <p><strong>Code:</strong> @Model.EmployeeCode | <strong>Status:</strong> @(Model.EmploymentDetails?.ActivityStatus ?? "Active")</p>
+    </div>
+
+    <div class="form-section">
+        <h3 class="section-title" style="color: #c0392b;">Connected Dependencies to be Purged</h3>
+        
+        <div class="grid-2-col">
+            <div>
+                <h4 class="fw-bold" style="font-size:1rem; margin-bottom:8px;">Addresses Block</h4>
+                @if (Model.Addresses != null && Model.Addresses.Any()) {
+                    <ul>@foreach (var addr in Model.Addresses) { <li>@addr.AddressType: @addr.District, @addr.Country</li> }</ul>
+                } else { <p class="text-muted small">None mapped</p> }
+
+                <h4 class="fw-bold mt-3" style="font-size:1rem; margin-bottom:8px;">Historical Experiences</h4>
+                @if (Model.WorkExperiences != null && Model.WorkExperiences.Any()) {
+                    <ul>@foreach (var exp in Model.WorkExperiences) { <li>@exp.PreviousEmployerName (@exp.JobTitle)</li> }</ul>
+                } else { <p class="text-muted small">None mapped</p> }
+
+                <h4 class="fw-bold mt-3" style="font-size:1rem; margin-bottom:8px;">Spouses Registry</h4>
+                @if (Model.Spouses != null && Model.Spouses.Any()) {
+                    <ul>@foreach (var sp in Model.Spouses) { <li>@sp.SpouseName</li> }</ul>
+                } else { <p class="text-muted small">None mapped</p> }
+            </div>
+
+            <div>
+                  <h4 class="fw-bold" style="font-size:1rem; margin-bottom:8px;">Skills Matrix</h4>
+                @if (Model.Skills != null && Model.Skills.Any()) {
+                    <ul>@foreach (var sk in Model.Skills) { <li>@sk.SkillName (@sk.ProficiencyLevel)</li> }</ul>
+                } else { <p class="text-muted small">None mapped</p> }
+
+                <h4 class="fw-bold mt-3" style="font-size:1rem; margin-bottom:8px;">Active Financial Loans</h4>
+                @if (Model.LoanHistories != null && Model.LoanHistories.Any()) {
+                    <ul>@foreach (var ln in Model.LoanHistories) { <li>@ln.LoanName - @ln.Amount.ToString("C")</li> }</ul>
+                } else { <p class="text-muted small">None mapped</p> }
+
+                <h4 class="fw-bold mt-3" style="font-size:1rem; margin-bottom:8px;">Languages Logged</h4>
+                @if (Model.LanguageSkills != null && Model.LanguageSkills.Any()) {
+                    <ul>@foreach (var lang in Model.LanguageSkills) { <li>@lang.LanguageName</li> }</ul>
+                } else { <p class="text-muted small">None mapped</p> }
+            </div>
+            <div>
+                <span style="color: #7f8c8d; font-size: 0.9rem; font-weight: 600; text-transform: uppercase;">Contact</span>
+                <div style="font-size: 1.1rem; color: #333;">@(Model.EmailAddress ?? Model.MobileNumber ?? "N/A")</div>
+            </div>
+        </div>
+        </div>
+
+    @using (Html.BeginForm("DeleteConfirmed", "Employee", new { id = Model.EmployeeId }, FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+        <div class="action-buttons" style="margin-top: 30px;">
+            <button type="submit" class="btn" style="background-color: #dc3545; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">🔥 Permanently Erase Profile</button>
+            <a href="@Url.Action("Index")" class="btn btn-secondary">Abort & Return</a>
+            </div>
+        }
+    </div>
 </div>
+
